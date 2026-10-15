@@ -7,6 +7,7 @@ output: github_document
 
 ```{r}
 library(tidyverse)
+library(rvest)
 library(httr)
 ```
 
@@ -35,6 +36,72 @@ swm_html =
 ```
 
 Next up ... selector gadget
+
+```{r}
+swm_title_vec =
+  swm_html |> 
+  html_elements(".ipc-title-link-wrapper .ipc-title__text") |> 
+  html_text()
+
+swm_metascore_vec =
+  swm_html |> 
+  html_elements(".metacritic-score-box") |> 
+  html_text()
+
+swm_runtime_vec =
+  swm_html |> 
+  html_elements(".base .ipc-inline-list__item:nth-child(2)") |> 
+  html_text()
+
+swm_df = 
+  tibble(
+    title = swm_title_vec,
+    score = swm_metascore_vec,
+    runtime = swm_runtime_vec
+  )
+```
+
+## Use APIs
+
+getting a csv
+
+```{r}
+nyc_water_df = 
+  GET("https://data.cityofnewyork.us/api/v3/views/ia2d-e54m/query.csv") |> 
+  content("parsed") |> 
+  select(year:per_capita_gallons_per_person_per_day)
+```
+
+getting a json file
+
+```{r}
+nyc_water_json = 
+  GET("https://data.cityofnewyork.us/api/v3/views/ia2d-e54m/query.json")
+
+nyc_water_json |> 
+  content("text") |> 
+  jsonlite::fromJSON() |> 
+  as_tibble() |> 
+  select(year:per_capita_gallons_per_person_per_day)
+```
+
+Look at some pokemon!
+
+```{r}
+pokemon_json = 
+  GET("https://pokeapi.co/api/v2/pokemon/1")
+
+pokemon_data = 
+  pokemon_json |> 
+  content()
+
+pokemon_data[["name"]]
+pokemon_data[["height"]]
+pokemon_data[["abilities"]]
+```
+
+
+
 
 
 
