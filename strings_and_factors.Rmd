@@ -11,6 +11,16 @@ library(p8105.datasets)
 library(rvest)
 library(forcats)
 library(stringr)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
 ```
 
 ## Strings and regex
@@ -163,6 +173,26 @@ data_marj |>
 
 * Mutating state to make it a factor variable and reordering it by percent (median value)
 
+
+## Weather data
+
+```{r}
+library(p8105.datasets)
+data("weather_df")
+
+weather_df |>
+  mutate(name = forcats::fct_relevel(name, c("Molokai_HI", "CentralPark_NY", "Waterhole_WA"))) |> 
+  ggplot(aes(x = name, y = tmax)) + 
+  geom_violin(aes(fill = name), color = "blue", alpha = .5) + 
+  theme(legend.position = "bottom")
+```
+
+Fit a linear regression where tmax is outcome, name is predictor:
+```{r}
+weather_df |> 
+  lm(tmax ~ name, data = _)
+```
+It will change the character variable `name` to a factor. If we want to reorder, pull in the mutate from the previous code chunk.
 
 
 
